@@ -1,5 +1,5 @@
 import { Typography, Empty } from '@douyinfe/semi-ui';
-import AppLayout from '../../components/AppLayout';
+import AppLayout from '@/components/AppLayout';
 
 const { Title } = Typography;
 

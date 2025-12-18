@@ -1,5 +1,5 @@
 import { Toast } from "@douyinfe/semi-ui";
-import { StoryNode, Layer } from "../../../types/layer";
+import { StoryNode, Layer } from "@/types/layer";
 
 interface NodeDimension {
   id: string;

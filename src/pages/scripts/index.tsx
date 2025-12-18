@@ -21,14 +21,14 @@ import {
   IconSearch,
 } from '@douyinfe/semi-icons';
 import { useNavigate } from 'react-router-dom';
-import { Script } from '../../types/script';
+import { Script } from '@/types/script';
 import {
   getScripts,
   deleteScript,
   renameScript,
   updateScriptTags,
-} from '../../services/scriptService';
-import AppLayout from '../../components/AppLayout';
+} from '@/services/scriptService';
+import AppLayout from '@/components/AppLayout';
 import './styles/Scripts.css';
 
 const { Text, Title } = Typography;

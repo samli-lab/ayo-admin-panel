@@ -1,0 +1,22 @@
+.create-blog-container {
+  padding: 24px;
+  background-color: var(--semi-color-bg-0);
+  min-height: 100%;
+}
+
+.create-blog-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.create-blog-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.create-blog-form .semi-form-field {
+  margin-bottom: 24px;
+}
+

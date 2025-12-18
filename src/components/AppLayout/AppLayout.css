@@ -10,3 +10,44 @@
 .user-info-trigger:hover {
   background-color: var(--semi-color-fill-0);
 }
+
+/* 二级子菜单缩进样式 */
+/* 使用多种选择器确保样式生效 */
+
+/* 方法1: 针对 Semi Design Nav 的子菜单项 */
+.app-layout-nav .semi-nav-sub .semi-nav-item,
+.app-layout-nav .semi-nav-item-group .semi-nav-item {
+  padding-left: 44px !important;
+}
+
+/* 方法2: 针对嵌套的 ul > li 结构 */
+.app-layout-nav ul ul li .semi-nav-item,
+.app-layout-nav .semi-nav-list .semi-nav-list .semi-nav-item {
+  padding-left: 44px !important;
+}
+
+/* 方法3: 直接针对子菜单的 li 元素 */
+.app-layout-nav .semi-nav-sub li,
+.app-layout-nav .semi-nav-item-group li,
+.app-layout-nav ul ul li {
+  padding-left: 44px !important;
+}
+
+/* 方法4: 针对子菜单项的内容区域 */
+.app-layout-nav .semi-nav-sub .semi-nav-item-content,
+.app-layout-nav .semi-nav-item-group .semi-nav-item-content,
+.app-layout-nav ul ul .semi-nav-item-content {
+  padding-left: 44px !important;
+}
+
+/* 方法5: 使用属性选择器 */
+.app-layout-nav [data-level="2"] .semi-nav-item,
+.app-layout-nav [aria-level="2"] {
+  padding-left: 44px !important;
+}
+
+/* 如果侧边栏折叠状态下，不需要缩进 */
+.app-layout-nav.semi-nav-collapsed .semi-nav-sub .semi-nav-item,
+.app-layout-nav.semi-nav-collapsed ul ul li {
+  padding-left: 0 !important;
+}

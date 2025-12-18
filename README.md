@@ -7,8 +7,8 @@
 - **React** 18.3+
 - **Vite** 7.0+
 - **TypeScript**
-- **React Flow** (@xyflow/react) - 流程图可视化库
-- **Semi Design** (@douyinfe/semi-ui) - 企业级 UI 组件库
+- **React Flow** 
+- **Semi Design** 
 
 ## 开始使用
 
@@ -62,12 +62,3 @@ ai-story-flow/
 - ✅ 工具栏操作（保存、重置、添加节点）
 - ✅ TypeScript 支持
 - ✅ 中文语言包支持
-
-## 下一步
-
-你可以根据需要：
-- 添加自定义节点类型
-- 实现节点数据编辑功能
-- 添加保存/加载流程功能
-- 集成 AI 处理逻辑
-

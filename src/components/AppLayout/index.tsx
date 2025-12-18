@@ -17,6 +17,9 @@ import {
   IconUser,
   IconSidebar,
   IconPlay,
+  IconFile,
+  IconList,
+  IconPlus,
 } from '@douyinfe/semi-icons';
 import { IconTag } from '@douyinfe/semi-icons-lab';
 import './AppLayout.css';
@@ -75,6 +78,28 @@ export default function AppLayout({
       text: '标签管理',
       icon: <IconTag />,
     },
+    {
+      itemKey: '/blog',
+      text: 'Blog管理',
+      icon: <IconFile />,
+      items: [
+        {
+          itemKey: '/blog/list',
+          text: '列表',
+          icon: <IconList />,
+        },
+        {
+          itemKey: '/blog/create',
+          text: '新增文章',
+          icon: <IconPlus />,
+        },
+        {
+          itemKey: '/blog/tag/create',
+          text: '新增标签',
+          icon: <IconTag />,
+        },
+      ],
+    },
   ];
 
   const handleNavSelect = (itemKey: string) => {
@@ -89,6 +114,13 @@ export default function AppLayout({
     if (path === '/scripts') return '/scripts';
     if (path === '/videos') return '/videos';
     if (path === '/tags') return '/tags';
+    if (path.startsWith('/blog')) {
+      // 如果是 blog 相关路径，返回具体的子菜单项
+      if (path === '/blog/list' || path === '/blog') return '/blog/list';
+      if (path === '/blog/create') return '/blog/create';
+      if (path === '/blog/tag/create') return '/blog/tag/create';
+      return '/blog/list'; // 默认返回列表
+    }
     return path;
   };
 
@@ -113,6 +145,7 @@ export default function AppLayout({
           )}
         </div>
         <Nav
+          className="app-layout-nav"
           style={{ height: 'calc(100vh - 72px)' }}
           items={navItems}
           selectedKeys={[getSelectedKey()]}

@@ -19,8 +19,8 @@ import {
   IconEdit,
   IconLink,
 } from '@douyinfe/semi-icons';
-import { createScript } from '../../../services/scriptService';
-import AppLayout from '../../../components/AppLayout';
+import { createScript } from '@/services/scriptService';
+import AppLayout from '@/components/AppLayout';
 
 const { Content } = Layout;
 const { Text } = Typography;

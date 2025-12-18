@@ -10,9 +10,9 @@ import {
   IconPlus,
 } from '@douyinfe/semi-icons';
 import { useEffect, useState } from 'react';
-import { getScripts } from '../../services/scriptService';
-import { Script } from '../../types/script';
-import AppLayout from '../../components/AppLayout';
+import { getScripts } from '@/services/scriptService';
+import { Script } from '@/types/script';
+import AppLayout from '@/components/AppLayout';
 import './styles/Dashboard.css';
 
 const { Title, Text } = Typography;

@@ -39,14 +39,14 @@ import {
   IconPlay,
   IconTicketCode,
 } from '@douyinfe/semi-icons';
-import { getScriptById } from '../../services/scriptService';
-import { generateInitialNode } from '../../services/nodeAIService';
-import { getLayers, createLayer } from '../../services/layerService';
-import { createNode, updateNode, deleteNode, batchUpdateNodePositions } from '../../services/nodeService';
-import { createBranch, deleteBranch } from '../../services/branchService';
-import { Script } from '../../types/script';
-import { Layer, StoryNode } from '../../types/layer';
-import AppLayout from '../../components/AppLayout';
+import { getScriptById } from '@/services/scriptService';
+import { generateInitialNode } from '@/services/nodeAIService';
+import { getLayers, createLayer } from '@/services/layerService';
+import { createNode, updateNode, deleteNode, batchUpdateNodePositions } from '@/services/nodeService';
+import { createBranch, deleteBranch } from '@/services/branchService';
+import { Script } from '@/types/script';
+import { Layer, StoryNode } from '@/types/layer';
+import AppLayout from '@/components/AppLayout';
 import { calculateNodePositions } from './utils/layoutUtils';
 import FunctionMenu from './components/FunctionMenu';
 import CustomEdge from './components/CustomEdge';
