@@ -7,6 +7,7 @@
 .create-blog-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -20,3 +21,103 @@
   margin-bottom: 24px;
 }
 
+/* 内容编辑区（用于定位专注模式入口按钮） */
+.create-blog-content {
+  position: relative;
+}
+
+.focus-mode-enter-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+/* 专注模式：不卸载表单，仅隐藏非内容区域并把内容编辑区拉满全屏 */
+.focus-mode-active {
+  padding: 0;
+}
+
+.focus-mode-active .create-blog-header {
+  display: none;
+}
+
+.focus-mode-active .create-blog-form {
+  max-width: 100%;
+  margin: 0;
+}
+
+.focus-mode-active .create-blog-form .semi-form-field {
+  margin-bottom: 0;
+}
+
+.focus-mode-active .create-blog-non-content {
+  display: none;
+}
+
+.focus-mode-active .create-blog-actions {
+  display: none;
+}
+
+/* 把内容区变成全屏固定层，覆盖 AppLayout（侧边栏/头部） */
+.focus-mode-active .create-blog-content {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: var(--semi-color-bg-0);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 专注模式工具栏：仅在 focus-mode-active 下显示 */
+.focus-mode-toolbar {
+  display: none;
+}
+
+.focus-mode-active .focus-mode-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--semi-color-border);
+  background-color: var(--semi-color-bg-1);
+}
+
+/* 专注模式下隐藏入口按钮 */
+.focus-mode-active .focus-mode-enter-btn {
+  display: none;
+}
+
+/* 让 textarea 填满剩余空间 */
+.focus-mode-active .create-blog-content .semi-form-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px 24px;
+}
+
+.focus-mode-active .create-blog-content .semi-form-field-label {
+  display: none;
+}
+
+.focus-mode-active .create-blog-content .semi-textarea-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.focus-mode-active .create-blog-content .semi-textarea {
+  flex: 1;
+  resize: none;
+  border: none;
+  box-shadow: none;
+  padding: 24px;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.focus-mode-active .create-blog-content .semi-textarea:focus {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}

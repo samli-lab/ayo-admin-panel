@@ -145,7 +145,6 @@ export default function BlogListPage() {
               setPagination(prev => ({ ...prev, page: 1 }));
             }}
             style={{ width: 200 }}
-            allowClear
           >
             {categories.map((cat) => (
               <Select.Option key={cat.id} value={cat.name}>
@@ -183,7 +182,6 @@ export default function BlogListPage() {
                 <Card
                   key={post.id}
                   className="blog-post-card"
-                  hoverable
                   onClick={() => navigate(`/blog/posts/${post.slug}`)}
                 >
                   <div className="blog-post-card-content">
