@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Layout,
@@ -24,6 +24,9 @@ import './AppLayout.css';
 const { Header, Content, Sider } = Layout;
 const { Text } = Typography;
 
+// localStorage 键名
+const SIDEBAR_COLLAPSED_KEY = 'app-sidebar-collapsed';
+
 interface AppLayoutProps {
   children: ReactNode;
   showHeader?: boolean;
@@ -39,7 +42,17 @@ export default function AppLayout({
 }: AppLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(true);
+
+  // 从 localStorage 读取初始状态，如果没有则默认为 true
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  // 当折叠状态改变时，保存到 localStorage
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(isCollapsed));
+  }, [isCollapsed]);
 
   const navItems = [
     {
