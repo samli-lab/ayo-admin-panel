@@ -13,6 +13,8 @@ import {
   IconMaximize,
   IconMinimize,
 } from '@douyinfe/semi-icons';
+import { MdEditor } from 'md-editor-rt';
+import 'md-editor-rt/lib/style.css';
 import { createPost, getCategories, getTags } from '@/services/blogService';
 import AppLayout from '@/components/AppLayout';
 import './styles/CreateBlog.css';
@@ -27,6 +29,7 @@ export default function CreateBlogPage() {
   const [tags, setTags] = useState<Array<{ id: number; name: string }>>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [focusMode, setFocusMode] = useState(false);
+  const [content, setContent] = useState('');
 
   // 加载分类和标签
   useEffect(() => {
@@ -58,6 +61,11 @@ export default function CreateBlogPage() {
   const handleSubmit = async (values: any) => {
     setLoading(true);
     try {
+      if (!content.trim()) {
+        Toast.warning('请输入文章内容');
+        return;
+      }
+
       // 生成 slug（如果未提供）
       let slug = values.slug?.trim();
       if (!slug) {
@@ -73,7 +81,7 @@ export default function CreateBlogPage() {
       await createPost({
         title: values.title,
         slug: slug,
-        content: values.content,
+        content: content,
         excerpt: values.excerpt,
         category: values.category,
         tags: selectedTags.length > 0 ? selectedTags : undefined,
@@ -101,7 +109,7 @@ export default function CreateBlogPage() {
   // 统一的Form组件
   const renderForm = () => (
     <Form
-      getFormApi={(api) => setFormApi(api)}
+      getFormApi={(api: any) => setFormApi(api)}
       onSubmit={handleSubmit}
       className="create-blog-form"
     >
@@ -149,9 +157,9 @@ export default function CreateBlogPage() {
           placeholder="请选择标签（可多选）"
           multiple
           style={{ width: '100%' }}
-          onChange={(value) => setSelectedTags(value as string[])}
+          onChange={(value: any) => setSelectedTags(value as string[])}
         >
-          {tags.map((tag) => (
+          {tags.map((tag: any) => (
             <Form.Select.Option key={tag.id} value={tag.name}>
               {tag.name}
             </Form.Select.Option>
@@ -198,23 +206,57 @@ export default function CreateBlogPage() {
           </Space>
         </div>
 
-        <Form.TextArea
-          field="content"
-          label="内容（Markdown格式）"
-          placeholder="请输入文章内容，支持Markdown格式"
-          autosize={{ minRows: 15, maxRows: 30 }}
-          rules={[{ required: true, message: '请输入文章内容' }]}
-          style={{ width: '100%' }}
-        />
+        {!focusMode && <div className="markdown-editor-label">内容（Markdown格式）</div>}
+        <div className="markdown-editor-wrapper">
+          <MdEditor
+            modelValue={content}
+            onChange={setContent}
+            placeholder="开始写作..."
+            style={{ height: focusMode ? 'calc(100vh - 64px)' : '500px' }}
+            toolbars={[
+              'bold',
+              'underline',
+              'italic',
+              '-',
+              'strikeThrough',
+              'title',
+              'sub',
+              'sup',
+              'quote',
+              'unorderedList',
+              'orderedList',
+              '-',
+              'codeRow',
+              'code',
+              'link',
+              'image',
+              'table',
+              'mermaid',
+              'katex',
+              '-',
+              'revoke',
+              'next',
+              'save',
+              '=',
+              'pageFullscreen',
+              'fullscreen',
+              'preview',
+              'htmlPreview',
+              'catalog',
+            ]}
+          />
+        </div>
 
         {/* 进入专注模式按钮（正常模式展示在内容框右上角） */}
-        <Button
-          className="focus-mode-enter-btn"
-          icon={<IconMaximize />}
-          theme="borderless"
-          onClick={toggleFocusMode}
-          title="专注模式"
-        />
+        {!focusMode && (
+          <Button
+            className="focus-mode-enter-btn"
+            icon={<IconMaximize />}
+            theme="borderless"
+            onClick={toggleFocusMode}
+            title="专注模式"
+          />
+        )}
       </div>
 
       <Form.Slot label=" " className="create-blog-actions">

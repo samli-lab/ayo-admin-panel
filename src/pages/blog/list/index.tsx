@@ -133,20 +133,20 @@ export default function BlogListPage() {
             placeholder="搜索文章..."
             prefix={<IconSearch />}
             value={searchKeyword}
-            onChange={(value) => setSearchKeyword(value)}
+            onChange={(value: string) => setSearchKeyword(value)}
             onEnterPress={handleSearch}
             style={{ width: 300 }}
           />
           <Select
             placeholder="选择分类"
             value={selectedCategory}
-            onChange={(value) => {
+            onChange={(value: any) => {
               setSelectedCategory(value as string);
-              setPagination(prev => ({ ...prev, page: 1 }));
+              setPagination((prev: any) => ({ ...prev, page: 1 }));
             }}
             style={{ width: 200 }}
           >
-            {categories.map((cat) => (
+            {categories.map((cat: any) => (
               <Select.Option key={cat.id} value={cat.name}>
                 {cat.name}
               </Select.Option>
@@ -155,14 +155,14 @@ export default function BlogListPage() {
           <Select
             placeholder="选择标签"
             value={selectedTag}
-            onChange={(value) => {
+            onChange={(value: any) => {
               setSelectedTag(value as string);
-              setPagination(prev => ({ ...prev, page: 1 }));
+              setPagination((prev: any) => ({ ...prev, page: 1 }));
             }}
             style={{ width: 200 }}
             allowClear
           >
-            {tags.map((tag) => (
+            {tags.map((tag: any) => (
               <Select.Option key={tag.id} value={tag.name}>
                 {tag.name}
               </Select.Option>
@@ -178,7 +178,7 @@ export default function BlogListPage() {
             />
           ) : (
             <div className="blog-list-content">
-              {posts.map((post) => (
+              {posts.map((post: any) => (
                 <Card
                   key={post.id}
                   className="blog-post-card"
@@ -211,7 +211,7 @@ export default function BlogListPage() {
                         </Space>
                         {post.tags && post.tags.length > 0 && (
                           <div className="blog-post-tags">
-                            {post.tags.map((tag, index) => (
+                            {post.tags.map((tag: string, index: number) => (
                               <Tag key={index} size="small">
                                 {tag}
                               </Tag>
@@ -233,8 +233,8 @@ export default function BlogListPage() {
               currentPage={pagination.page}
               pageSize={pagination.pageSize}
               total={pagination.total}
-              onPageChange={(page) =>
-                setPagination(prev => ({ ...prev, page }))
+              onPageChange={(page: number) =>
+                setPagination((prev: any) => ({ ...prev, page }))
               }
               showTotal
             />
