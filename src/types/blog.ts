@@ -2,29 +2,41 @@
 
 // 文章列表项
 export interface PostListItem {
-  id: number;
+  id: string;
   slug: string;
   title: string;
   excerpt: string;
   date: string; // YYYY-MM-DD
-  category: string;
+  category: {
+    id: string;
+    name: string;
+  };
   imageUrl?: string;
   readTime?: string;
-  tags?: string[];
+  tags?: Array<{
+    id: string;
+    name: string;
+  }>;
 }
 
 // 文章详情
 export interface BlogPost {
-  id: number;
+  id: string;
   slug: string;
   title: string;
   date: string; // YYYY-MM-DD
-  category: string;
+  category: string | {
+    id: string;
+    name: string;
+  };
   readTime: string;
   imageUrl: string;
   content: string; // Markdown 格式
   excerpt?: string;
-  tags?: string[];
+  tags?: Array<{
+    id: string;
+    name: string;
+  }>;
   author?: {
     name: string;
     avatar?: string;
@@ -69,15 +81,16 @@ export interface Statistics {
 
 // 标签
 export interface Tag {
-  id: number;
+  id: string;
   name: string;
   count?: number;
 }
 
 // 分类
 export interface Category {
-  id: number;
+  id: string;
   name: string;
+  description?: string;
   count?: number;
 }
 
@@ -118,5 +131,22 @@ export interface UpdatePostParams {
 // 创建标签参数
 export interface CreateTagParams {
   name: string;
+}
+
+// 更新标签参数
+export interface UpdateTagParams {
+  name: string;
+}
+
+// 创建分类参数
+export interface CreateCategoryParams {
+  name: string;
+  description?: string;
+}
+
+// 更新分类参数
+export interface UpdateCategoryParams {
+  name: string;
+  description?: string;
 }
 

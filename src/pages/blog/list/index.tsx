@@ -1,27 +1,27 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Card,
+  Table,
   Typography,
   Button,
   Input,
   Tag,
-  Pagination,
   Select,
   Empty,
-  Spin,
   Toast,
   Space,
+  Popconfirm,
+  Image,
 } from '@douyinfe/semi-ui';
 import {
   IconPlus,
   IconSearch,
-  IconCalendar,
-  IconFolder,
+  IconEdit,
+  IconDelete,
   IconEyeOpened,
 } from '@douyinfe/semi-icons';
 import { useNavigate } from 'react-router-dom';
-import { PostListItem } from '@/types/blog';
-import { getPosts, getCategories, getTags } from '@/services/blogService';
+import { PostListItem, Category, Tag as BlogTag } from '@/types/blog';
+import { getPosts, getCategories, getTags, deletePost } from '@/services/blogService';
 import AppLayout from '@/components/AppLayout';
 import './styles/BlogList.css';
 
@@ -34,11 +34,11 @@ export default function BlogListPage() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedTag, setSelectedTag] = useState<string>('');
-  const [categories, setCategories] = useState<Array<{ id: number; name: string }>>([]);
-  const [tags, setTags] = useState<Array<{ id: number; name: string }>>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<BlogTag[]>([]);
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 6,
+    pageSize: 10,
     total: 0,
     totalPages: 0,
   });
@@ -103,15 +103,127 @@ export default function BlogListPage() {
     navigate('/blog/create');
   };
 
-  // 格式化日期
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+  // 处理删除
+  const handleDelete = async (slug: string) => {
+    try {
+      await deletePost(slug);
+      Toast.success('文章已删除');
+      loadPosts();
+    } catch (error) {
+      Toast.error('删除文章失败');
+      console.error(error);
+    }
   };
+
+  const columns = [
+    {
+      title: '封面',
+      dataIndex: 'imageUrl',
+      key: 'imageUrl',
+      width: 120,
+      render: (_: any, record: PostListItem) => (
+        record.imageUrl ? (
+          <Image
+            src={record.imageUrl}
+            width={80}
+            height={50}
+            style={{ borderRadius: '4px', objectFit: 'cover' }}
+          />
+        ) : (
+          <div style={{
+            width: 80,
+            height: 50,
+            backgroundColor: 'var(--semi-color-fill-0)',
+            borderRadius: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '12px',
+            color: 'var(--semi-color-text-2)'
+          }}>无封面</div>
+        )
+      ),
+    },
+    {
+      title: '标题',
+      dataIndex: 'title',
+      key: 'title',
+      render: (text: string, record: PostListItem) => (
+        <Text
+          link
+          strong
+          onClick={() => navigate(`/blog/posts/${record.slug}`)}
+          style={{ fontSize: '14px' }}
+        >
+          {text}
+        </Text>
+      ),
+    },
+    {
+      title: '分类',
+      dataIndex: 'category',
+      key: 'category',
+      width: 120,
+      render: (category: any) => (
+        <Tag color="blue" type="light">
+          {category?.name || '-'}
+        </Tag>
+      ),
+    },
+    {
+      title: '标签',
+      dataIndex: 'tags',
+      key: 'tags',
+      render: (tags: any[]) => (
+        <Space wrap>
+          {tags?.map((tag: any) => (
+            <Tag key={tag.id} size="small" color="cyan" type="light">
+              {tag.name}
+            </Tag>
+          )) || '-'}
+        </Space>
+      ),
+    },
+    {
+      title: '发布日期',
+      dataIndex: 'date',
+      key: 'date',
+      width: 120,
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 150,
+      render: (_: any, record: PostListItem) => (
+        <Space>
+          <Button
+            icon={<IconEyeOpened />}
+            theme="borderless"
+            onClick={() => navigate(`/blog/posts/${record.slug}`)}
+            title="查看"
+          />
+          <Button
+            icon={<IconEdit />}
+            theme="borderless"
+            onClick={() => navigate(`/blog/edit/${record.slug}`)}
+            title="编辑"
+          />
+          <Popconfirm
+            title="确定要删除这篇文章吗？"
+            content="此操作不可逆，请谨慎操作。"
+            onConfirm={() => handleDelete(record.slug)}
+          >
+            <Button
+              icon={<IconDelete />}
+              theme="borderless"
+              type="danger"
+              title="删除"
+            />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <AppLayout headerTitle="Blog管理 - 列表">
@@ -145,9 +257,10 @@ export default function BlogListPage() {
               setPagination((prev: any) => ({ ...prev, page: 1 }));
             }}
             style={{ width: 200 }}
+            allowClear
           >
             {categories.map((cat: any) => (
-              <Select.Option key={cat.id} value={cat.name}>
+              <Select.Option key={cat.id} value={cat.id}>
                 {cat.name}
               </Select.Option>
             ))}
@@ -170,78 +283,26 @@ export default function BlogListPage() {
           </Select>
         </div>
 
-        <Spin spinning={loading}>
-          {posts.length === 0 ? (
+        <Table
+          columns={columns}
+          dataSource={posts}
+          loading={loading}
+          pagination={{
+            currentPage: pagination.page,
+            pageSize: pagination.pageSize,
+            total: pagination.total,
+            onPageChange: (page: number) => setPagination((prev: any) => ({ ...prev, page })),
+            showTotal: true,
+          }}
+          rowKey="id"
+          empty={
             <Empty
               description="暂无文章"
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
-          ) : (
-            <div className="blog-list-content">
-              {posts.map((post: any) => (
-                <Card
-                  key={post.id}
-                  className="blog-post-card"
-                  onClick={() => navigate(`/blog/posts/${post.slug}`)}
-                >
-                  <div className="blog-post-card-content">
-                    {post.imageUrl && (
-                      <div className="blog-post-image">
-                        <img src={post.imageUrl} alt={post.title} />
-                      </div>
-                    )}
-                    <div className="blog-post-info">
-                      <Title heading={4} className="blog-post-title">
-                        {post.title}
-                      </Title>
-                      <Text className="blog-post-excerpt">{post.excerpt}</Text>
-                      <div className="blog-post-meta">
-                        <Space>
-                          <Text type="secondary">
-                            <IconCalendar /> {formatDate(post.date)}
-                          </Text>
-                          <Text type="secondary">
-                            <IconFolder /> {post.category}
-                          </Text>
-                          {post.readTime && (
-                            <Text type="secondary">
-                              <IconEyeOpened /> {post.readTime}
-                            </Text>
-                          )}
-                        </Space>
-                        {post.tags && post.tags.length > 0 && (
-                          <div className="blog-post-tags">
-                            {post.tags.map((tag: string, index: number) => (
-                              <Tag key={index} size="small">
-                                {tag}
-                              </Tag>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </Spin>
-
-        {pagination.totalPages > 1 && (
-          <div className="blog-list-pagination">
-            <Pagination
-              currentPage={pagination.page}
-              pageSize={pagination.pageSize}
-              total={pagination.total}
-              onPageChange={(page: number) =>
-                setPagination((prev: any) => ({ ...prev, page }))
-              }
-              showTotal
-            />
-          </div>
-        )}
+          }
+        />
       </div>
     </AppLayout>
   );
 }
-

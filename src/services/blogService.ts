@@ -1,6 +1,5 @@
 // 博客服务 API
 import {
-  PostListItem,
   BlogPost,
   PostListResponse,
   SidebarData,
@@ -9,6 +8,9 @@ import {
   CreatePostParams,
   UpdatePostParams,
   CreateTagParams,
+  UpdateTagParams,
+  CreateCategoryParams,
+  UpdateCategoryParams,
 } from "../types/blog";
 import { ApiResponse, ApiError } from "../utils/api";
 
@@ -47,7 +49,8 @@ const blogApiRequest = async <T>(
       throw new Error((result as ApiError).message || "请求失败");
     }
 
-    if ((result as ApiResponse<T>).code !== 200) {
+    const successCodes = [200, 201];
+    if (!successCodes.includes((result as ApiResponse<T>).code)) {
       throw new Error((result as ApiResponse<T>).message || "请求失败");
     }
 
@@ -193,4 +196,71 @@ export const deletePost = async (slug: string): Promise<void> => {
 // 创建标签
 export const createTag = async (params: CreateTagParams): Promise<Tag> => {
   return blogApiPost<Tag>("/api/tags", params);
+};
+
+// 更新标签
+export const updateTag = async (
+  id: string | number,
+  params: UpdateTagParams
+): Promise<Tag> => {
+  return blogApiPut<Tag>(`/api/tags/${id}`, params);
+};
+
+// 删除标签
+export const deleteTag = async (id: string | number): Promise<void> => {
+  return blogApiDelete<void>(`/api/tags/${id}`);
+};
+
+// 创建分类
+export const createCategory = async (
+  params: CreateCategoryParams
+): Promise<Category> => {
+  return blogApiPost<Category>("/api/categories", params);
+};
+
+// 更新分类
+export const updateCategory = async (
+  id: string | number,
+  params: UpdateCategoryParams
+): Promise<Category> => {
+  return blogApiPut<Category>(`/api/categories/${id}`, params);
+};
+
+// 删除分类
+export const deleteCategory = async (id: string | number): Promise<void> => {
+  return blogApiDelete<void>(`/api/categories/${id}`);
+};
+
+// 上传图片/附件
+export const uploadFile = async (
+  file: File
+): Promise<{ url: string; key: string }> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const token = getAuthToken();
+  const url = `${BLOG_API_BASE_URL}/api/posts/upload`;
+
+  const headers: HeadersInit = {
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || (result.code !== 200 && result.code !== 201)) {
+      throw new Error(result.message || "上传失败");
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Upload Error:", error);
+    throw error;
+  }
 };

@@ -94,8 +94,13 @@ export default function AppLayout({
           icon: <IconPlus />,
         },
         {
-          itemKey: '/blog/tag/create',
-          text: '新增标签',
+          itemKey: '/blog/category',
+          text: '分类管理',
+          icon: <IconList />,
+        },
+        {
+          itemKey: '/blog/tag',
+          text: '标签管理',
           icon: <IconTag />,
         },
       ],
@@ -118,7 +123,8 @@ export default function AppLayout({
       // 如果是 blog 相关路径，返回具体的子菜单项
       if (path === '/blog/list' || path === '/blog') return '/blog/list';
       if (path === '/blog/create') return '/blog/create';
-      if (path === '/blog/tag/create') return '/blog/tag/create';
+      if (path === '/blog/category') return '/blog/category';
+      if (path === '/blog/tag') return '/blog/tag';
       return '/blog/list'; // 默认返回列表
     }
     return path;

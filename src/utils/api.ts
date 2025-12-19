@@ -54,7 +54,8 @@ export const apiRequest = async <T>(
       throw new Error((result as ApiError).message || "请求失败");
     }
 
-    if ((result as ApiResponse<T>).code !== 200) {
+    const successCodes = [200, 201];
+    if (!successCodes.includes((result as ApiResponse<T>).code)) {
       throw new Error((result as ApiResponse<T>).message || "请求失败");
     }
 

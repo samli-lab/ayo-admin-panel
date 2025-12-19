@@ -45,6 +45,11 @@
   border: 1px solid var(--semi-color-border);
 }
 
+/* 调整 Semi UI Upload 列表样式 */
+.create-blog-form .semi-upload-list-item {
+  margin-bottom: 0;
+}
+
 .focus-mode-enter-btn {
   position: absolute;
   top: -4px;
