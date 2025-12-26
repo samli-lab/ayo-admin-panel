@@ -20,6 +20,7 @@ import {
   IconFile,
   IconList,
   IconPlus,
+  IconImage,
 } from '@douyinfe/semi-icons';
 import { IconTag } from '@douyinfe/semi-icons-lab';
 import './AppLayout.css';
@@ -103,6 +104,11 @@ export default function AppLayout({
           text: '标签管理',
           icon: <IconTag />,
         },
+        {
+          itemKey: '/blog/gallery/list',
+          text: '相册管理',
+          icon: <IconImage />,
+        },
       ],
     },
   ];
@@ -125,6 +131,7 @@ export default function AppLayout({
       if (path === '/blog/create') return '/blog/create';
       if (path === '/blog/category') return '/blog/category';
       if (path === '/blog/tag') return '/blog/tag';
+      if (path.startsWith('/blog/gallery')) return '/blog/gallery/list';
       return '/blog/list'; // 默认返回列表
     }
     return path;

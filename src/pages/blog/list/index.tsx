@@ -257,7 +257,7 @@ export default function BlogListPage() {
               setPagination((prev: any) => ({ ...prev, page: 1 }));
             }}
             style={{ width: 200 }}
-            allowClear
+            showClear
           >
             {categories.map((cat: any) => (
               <Select.Option key={cat.id} value={cat.id}>
@@ -273,7 +273,7 @@ export default function BlogListPage() {
               setPagination((prev: any) => ({ ...prev, page: 1 }));
             }}
             style={{ width: 200 }}
-            allowClear
+            showClear
           >
             {tags.map((tag: any) => (
               <Select.Option key={tag.id} value={tag.name}>
@@ -298,7 +298,6 @@ export default function BlogListPage() {
           empty={
             <Empty
               description="暂无文章"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
           }
         />

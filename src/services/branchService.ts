@@ -1,6 +1,6 @@
 // 分支服务 API
 import { Branch } from '../types/layer';
-import { apiPost, apiPut, apiDelete } from '../utils/api';
+import { branchApi } from '../utils/api';
 
 // 创建分支
 export interface CreateBranchParams {
@@ -16,7 +16,7 @@ export const createBranch = async (
   scriptId: string,
   params: CreateBranchParams
 ): Promise<Branch> => {
-  const branch = await apiPost<Branch>(`/api/scripts/${scriptId}/branches`, params);
+  const branch = await branchApi.post<Branch>(`/api/scripts/${scriptId}/branches`, params);
   return branch;
 };
 
@@ -33,7 +33,7 @@ export const updateBranch = async (
   branchId: string,
   params: UpdateBranchParams
 ): Promise<Branch> => {
-  const branch = await apiPut<Branch>(`/api/scripts/${scriptId}/branches/${branchId}`, params);
+  const branch = await branchApi.put<Branch>(`/api/scripts/${scriptId}/branches/${branchId}`, params);
   return branch;
 };
 
@@ -42,6 +42,6 @@ export const deleteBranch = async (
   scriptId: string,
   branchId: string
 ): Promise<void> => {
-  await apiDelete(`/api/scripts/${scriptId}/branches/${branchId}`);
+  await branchApi.delete(`/api/scripts/${scriptId}/branches/${branchId}`);
 };
 

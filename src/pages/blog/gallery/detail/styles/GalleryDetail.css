@@ -1,0 +1,27 @@
+.gallery-detail-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gallery-detail-header {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.gallery-detail-meta {
+  margin-top: 8px;
+}
+
+.gallery-detail-image {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.gallery-detail-description {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--semi-color-text-0);
+}
+

@@ -1,0 +1,17 @@
+.gallery-list-container {
+  padding: 24px;
+}
+
+.gallery-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.gallery-list-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+

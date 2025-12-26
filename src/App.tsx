@@ -12,6 +12,10 @@ import BlogEditPage from "./pages/blog/edit";
 import BlogDetailPage from "./pages/blog/detail";
 import CategoryPage from "./pages/blog/category";
 import TagManagementPage from "./pages/blog/tag";
+import GalleryListPage from "./pages/blog/gallery/list";
+import CreateGalleryPage from "./pages/blog/gallery/create";
+import EditGalleryPage from "./pages/blog/gallery/edit";
+import GalleryDetailPage from "./pages/blog/gallery/detail";
 
 function App() {
   return (
@@ -30,6 +34,11 @@ function App() {
         <Route path="/blog/category" element={<CategoryPage />} />
         <Route path="/blog/tag" element={<TagManagementPage />} />
         <Route path="/blog/list" element={<BlogListPage />} />
+        <Route path="/blog/gallery/list" element={<GalleryListPage />} />
+        <Route path="/blog/gallery/create" element={<CreateGalleryPage />} />
+        <Route path="/blog/gallery/edit/:id" element={<EditGalleryPage />} />
+        <Route path="/blog/gallery/:id" element={<GalleryDetailPage />} />
+        <Route path="/blog/gallery" element={<Navigate to="/blog/gallery/list" replace />} />
         <Route path="/blog" element={<Navigate to="/blog/list" replace />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
