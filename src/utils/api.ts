@@ -60,6 +60,11 @@ const getAuthToken = (): string | null => {
   return localStorage.getItem("auth_token");
 };
 
+// 处理 401 未授权错误，跳转到登录页
+const handleUnauthorized = () => {
+  console.log("检测到 401 未授权错误，准备跳转到登录页");
+};
+
 // API 客户端接口
 export interface ApiClient {
   get: <T>(endpoint: string, params?: Record<string, any>) => Promise<T>;
@@ -79,9 +84,13 @@ export const createApiClient = (baseURL: string): ApiClient => {
     const token = getAuthToken();
     const url = `${baseURL}${endpoint}`;
 
+    // 构建请求头
+    // 如果 body 是 FormData，不设置 Content-Type，让浏览器自动设置（包含 boundary）
+    const isFormData = options.body instanceof FormData;
     const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(!isFormData && { "Content-Type": "application/json" }),
+      // 设置 Authorization header，确保 Bearer 后面有空格
+      ...(token && { Authorization: `Bearer ${token.trim()}` }),
       ...options.headers,
     };
 
@@ -91,7 +100,32 @@ export const createApiClient = (baseURL: string): ApiClient => {
         headers,
       });
 
-      const result: ApiResponse<T> | ApiError = await response.json();
+      // 处理 401 未授权错误（HTTP 状态码）
+      if (response.status === 401) {
+        console.log("检测到 HTTP 401 状态码");
+        handleUnauthorized();
+        // 不抛出错误，让跳转执行
+        return Promise.reject(new Error("未授权，请重新登录"));
+      }
+
+      // 尝试解析 JSON 响应
+      let result: ApiResponse<T> | ApiError;
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        // 如果响应不是 JSON 格式，检查状态码
+        if (response.status === 401) {
+          console.log("响应不是 JSON，但状态码是 401");
+          handleUnauthorized();
+          return Promise.reject(new Error("未授权，请重新登录"));
+        }
+        if (!response.ok) {
+          throw new Error(
+            `请求失败: ${response.status} ${response.statusText}`
+          );
+        }
+        throw new Error("响应格式错误");
+      }
 
       if (!response.ok) {
         throw new Error((result as ApiError).message || "请求失败");
@@ -99,6 +133,12 @@ export const createApiClient = (baseURL: string): ApiClient => {
 
       const successCodes = [200, 201];
       if (!successCodes.includes((result as ApiResponse<T>).code)) {
+        // 检查业务层面的 401 错误码
+        if ((result as ApiResponse<T>).code === 401) {
+          console.log("检测到业务层 401 错误码");
+          handleUnauthorized();
+          return Promise.reject(new Error("未授权，请重新登录"));
+        }
         throw new Error((result as ApiResponse<T>).message || "请求失败");
       }
 
@@ -125,9 +165,16 @@ export const createApiClient = (baseURL: string): ApiClient => {
     },
 
     post: <T>(endpoint: string, data?: any): Promise<T> => {
+      // 如果 data 是 FormData，直接传递；否则转换为 JSON
+      const body =
+        data instanceof FormData
+          ? data
+          : data
+          ? JSON.stringify(data)
+          : undefined;
       return apiRequest<T>(endpoint, {
         method: "POST",
-        body: data ? JSON.stringify(data) : undefined,
+        body,
       });
     },
 

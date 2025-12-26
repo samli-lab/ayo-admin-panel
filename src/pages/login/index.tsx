@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Card,
   Form,
@@ -15,25 +15,56 @@ import {
   IconGithubLogo,
   IconHome,
 } from "@douyinfe/semi-icons";
+import { login } from "@/services/authService";
 import "./styles/Login.css";
 
 const { Title, Text } = Typography;
 
 function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (values: any) => {
     setLoading(true);
-    // 模拟登录请求
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const result = await login({
+        email: values.email || values.username, // 兼容 username 字段
+        password: values.password,
+      });
+
+      // 保存 token（从 data.token.value 中获取）
+      const tokenValue = result.token?.value || result.token;
+      if (tokenValue) {
+        localStorage.setItem("auth_token", tokenValue);
+      }
+
+      // 保存用户信息
+      if (result.user) {
+        localStorage.setItem("user_info", JSON.stringify(result.user));
+      }
+
       Toast.success({
         content: "登录成功！",
         duration: 2,
       });
-      navigate("/dashboard");
-    }, 1000);
+
+      // 处理重定向
+      const redirect = searchParams.get("redirect");
+      if (redirect) {
+        navigate(decodeURIComponent(redirect), { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+    } catch (error: any) {
+      Toast.error({
+        content: error.message || "登录失败，请检查邮箱和密码",
+        duration: 3,
+      });
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,7 +110,7 @@ function Login() {
             onSubmit={handleSubmit}
             style={{ width: "100%" }}
             initValues={{
-              username: "",
+              email: "",
               password: "",
               remember: false,
             }}
@@ -87,12 +118,13 @@ function Login() {
             {() => (
               <>
                 <Form.Input
-                  field="username"
-                  label="用户名"
-                  placeholder="请输入用户名"
+                  field="email"
+                  label="邮箱"
+                  placeholder="请输入邮箱"
                   prefix={<IconUser />}
                   rules={[
-                    { required: true, message: "请输入用户名" },
+                    { required: true, message: "请输入邮箱" },
+                    { type: "email", message: "请输入有效的邮箱地址" },
                   ]}
                   style={{ marginBottom: 20 }}
                 />

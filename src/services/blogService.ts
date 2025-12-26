@@ -152,33 +152,9 @@ export const uploadFile = async (
   const formData = new FormData();
   formData.append("file", file);
 
-  const token = localStorage.getItem("auth_token");
-  const baseURL =
-    import.meta.env.VITE_BLOG_API_URL ||
-    import.meta.env.VITE_API_BASE_URL ||
-    "http://localhost:8000";
-  const url = `${baseURL}/api/posts/upload`;
-
-  const headers: HeadersInit = {
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers,
-      body: formData,
-    });
-
-    const result = await response.json();
-
-    if (!response.ok || (result.code !== 200 && result.code !== 201)) {
-      throw new Error(result.message || "上传失败");
-    }
-
-    return result.data;
-  } catch (error) {
-    console.error("Upload Error:", error);
-    throw error;
-  }
+  // 使用统一的 API 客户端
+  return blogApi.post<{ url: string; key: string }>(
+    "/api/posts/upload",
+    formData
+  );
 };
