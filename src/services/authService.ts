@@ -47,3 +47,46 @@ export const login = async (params: LoginParams): Promise<LoginResponse> => {
 
   return result.data;
 };
+
+/**
+ * 登出
+ * 清除本地存储的 token 和用户信息
+ */
+export const logout = () => {
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("user_info");
+};
+
+/**
+ * 检查是否已登录
+ * @returns 如果已登录返回 true，否则返回 false
+ */
+export const isAuthenticated = (): boolean => {
+  const token = localStorage.getItem("auth_token");
+  return !!token;
+};
+
+/**
+ * 获取当前登录用户信息
+ * @returns 用户信息对象，如果未登录返回 null
+ */
+export const getCurrentUser = (): LoginResponse["user"] | null => {
+  const userInfo = localStorage.getItem("user_info");
+  if (!userInfo) {
+    return null;
+  }
+  try {
+    return JSON.parse(userInfo);
+  } catch (error) {
+    console.error("解析用户信息失败:", error);
+    return null;
+  }
+};
+
+/**
+ * 获取当前 token
+ * @returns token 字符串，如果未登录返回 null
+ */
+export const getToken = (): string | null => {
+  return localStorage.getItem("auth_token");
+};

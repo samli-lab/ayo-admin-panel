@@ -8,6 +8,7 @@ import {
   Space,
   Typography,
   Button,
+  Toast,
 } from '@douyinfe/semi-ui';
 import {
   IconHome,
@@ -23,6 +24,7 @@ import {
   IconImage,
 } from '@douyinfe/semi-icons';
 import { IconTag } from '@douyinfe/semi-icons-lab';
+import { logout, getCurrentUser } from '@/services/authService';
 import './AppLayout.css';
 
 const { Header, Content, Sider } = Layout;
@@ -53,10 +55,30 @@ export default function AppLayout({
     return saved !== null ? saved === 'true' : true;
   });
 
+  // 获取当前用户信息
+  const [userName, setUserName] = useState<string>('用户');
+
+  useEffect(() => {
+    const user = getCurrentUser();
+    if (user) {
+      setUserName(user.fullName || user.email || '用户');
+    }
+  }, []);
+
   // 当折叠状态改变时，保存到 localStorage
   useEffect(() => {
     localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(isCollapsed));
   }, [isCollapsed]);
+
+  // 处理退出登录
+  const handleLogout = () => {
+    logout();
+    Toast.success({
+      content: '已退出登录',
+      duration: 2,
+    });
+    navigate('/login', { replace: true });
+  };
 
   const navItems = [
     {
@@ -207,9 +229,7 @@ export default function AppLayout({
                       </Dropdown.Item>
                       <Dropdown.Item
                         icon={<IconExit />}
-                        onClick={() => {
-                          navigate('/login');
-                        }}
+                        onClick={handleLogout}
                       >
                         退出登录
                       </Dropdown.Item>
@@ -232,7 +252,7 @@ export default function AppLayout({
                     >
                       <IconUser />
                     </Avatar>
-                    <Text strong>用户名</Text>
+                    <Text strong>{userName}</Text>
                   </Space>
                 </Dropdown>
               </Space>

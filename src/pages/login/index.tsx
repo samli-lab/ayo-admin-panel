@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Card,
@@ -24,6 +24,19 @@ function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
+
+  // 检查用户是否已登录，如果已登录则跳转到首页
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      const redirect = searchParams.get("redirect");
+      if (redirect) {
+        navigate(decodeURIComponent(redirect), { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+    }
+  }, [navigate, searchParams]);
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
