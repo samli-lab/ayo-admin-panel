@@ -16,6 +16,7 @@ import GalleryListPage from "./pages/blog/gallery/list";
 import CreateGalleryPage from "./pages/blog/gallery/create";
 import EditGalleryPage from "./pages/blog/gallery/edit";
 import GalleryDetailPage from "./pages/blog/gallery/detail";
+import ImageGeneratePage from "./pages/ai/image-generate";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -32,6 +33,11 @@ function App() {
         <Route path="/script/:id" element={<ProtectedRoute><ScriptDetail /></ProtectedRoute>} />
         <Route path="/videos" element={<ProtectedRoute><VideosPage /></ProtectedRoute>} />
         <Route path="/tags" element={<ProtectedRoute><TagsPage /></ProtectedRoute>} />
+        
+        {/* AI 管理 */}
+        <Route path="/ai/image-generate" element={<ProtectedRoute><ImageGeneratePage /></ProtectedRoute>} />
+        <Route path="/ai" element={<Navigate to="/ai/image-generate" replace />} />
+
         <Route path="/blog/create" element={<ProtectedRoute><CreateBlogPage /></ProtectedRoute>} />
         <Route path="/blog/edit/:slug" element={<ProtectedRoute><BlogEditPage /></ProtectedRoute>} />
         <Route path="/blog/posts/:slug" element={<ProtectedRoute><BlogDetailPage /></ProtectedRoute>} />

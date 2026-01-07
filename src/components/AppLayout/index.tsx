@@ -133,6 +133,18 @@ export default function AppLayout({
         },
       ],
     },
+    {
+      itemKey: '/ai',
+      text: 'AI管理',
+      icon: <IconSetting />,
+      items: [
+        {
+          itemKey: '/ai/image-generate',
+          text: '图片生成',
+          icon: <IconImage />,
+        },
+      ],
+    },
   ];
 
   const handleNavSelect = (itemKey: string) => {
@@ -147,6 +159,10 @@ export default function AppLayout({
     if (path === '/scripts') return '/scripts';
     if (path === '/videos') return '/videos';
     if (path === '/tags') return '/tags';
+    if (path.startsWith('/ai')) {
+      if (path === '/ai/image-generate') return '/ai/image-generate';
+      return '/ai/image-generate';
+    }
     if (path.startsWith('/blog')) {
       // 如果是 blog 相关路径，返回具体的子菜单项
       if (path === '/blog/list' || path === '/blog') return '/blog/list';
