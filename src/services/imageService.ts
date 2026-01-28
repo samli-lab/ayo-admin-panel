@@ -17,10 +17,12 @@ export const imageService = {
    * 测试接口：图生图 (form-data)
    * 接口返回格式: { success: true, data: { result: "base64...", ... } }
    */
-  generateImageTest: async (prompt: string, image: File): Promise<string> => {
+  generateImageTest: async (prompt: string, image?: File): Promise<string> => {
     const formData = new FormData();
     formData.append("prompt", prompt);
-    formData.append("image", image);
+    if (image) {
+      formData.append("image", image);
+    }
 
     try {
       const response = await fetch("http://localhost:3333/api/ai/test/image", {
