@@ -8,6 +8,7 @@ import {
   Space,
   Image,
   Upload,
+  Modal,
 } from '@douyinfe/semi-ui';
 import {
   IconArrowLeft,
@@ -17,6 +18,7 @@ import {
 import { createPhoto } from '@/services/galleryService';
 import { uploadFile } from '@/services/blogService';
 import AppLayout from '@/components/AppLayout';
+import { ImageCompressor } from '@/components/Image';
 import './styles/CreateGallery.css';
 
 const { Title } = Typography;
@@ -27,6 +29,9 @@ export default function CreateGalleryPage() {
   const [formApi, setFormApi] = useState<any>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [photoFileList, setPhotoFileList] = useState<any[]>([]);
+  const [showCompressor, setShowCompressor] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [pendingUpload, setPendingUpload] = useState<any>(null);
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
@@ -71,6 +76,63 @@ export default function CreateGalleryPage() {
     }
   };
 
+  const handleFileSelected = (file: File, uploadCallbacks: any) => {
+    setSelectedFile(file);
+    setPendingUpload(uploadCallbacks);
+    setShowCompressor(true);
+  };
+
+  const handleCompressedFile = async (compressedFile: File) => {
+    setShowCompressor(false);
+    if (pendingUpload) {
+      try {
+        const res = await uploadFile(compressedFile);
+        setPreviewUrl(res.url);
+        if (formApi) {
+          formApi.setValue('url', res.url);
+        }
+        // 让 Upload 组件通过 onSuccess 回调自动更新 fileList
+        pendingUpload.onSuccess(res, compressedFile);
+        Toast.success('压缩并上传成功');
+      } catch (error) {
+        Toast.error('上传图片失败');
+        pendingUpload.onError(error);
+      }
+    }
+    setSelectedFile(null);
+    setPendingUpload(null);
+  };
+
+  const handleUseOriginal = async (originalFile: File) => {
+    setShowCompressor(false);
+    if (pendingUpload) {
+      try {
+        const res = await uploadFile(originalFile);
+        setPreviewUrl(res.url);
+        if (formApi) {
+          formApi.setValue('url', res.url);
+        }
+        // 让 Upload 组件通过 onSuccess 回调自动更新 fileList
+        pendingUpload.onSuccess(res, originalFile);
+        Toast.success('上传成功');
+      } catch (error) {
+        Toast.error('上传图片失败');
+        pendingUpload.onError(error);
+      }
+    }
+    setSelectedFile(null);
+    setPendingUpload(null);
+  };
+
+  const handleCancelCompress = () => {
+    setShowCompressor(false);
+    setSelectedFile(null);
+    if (pendingUpload) {
+      pendingUpload.onError(new Error('用户取消'));
+    }
+    setPendingUpload(null);
+  };
+
   return (
     <AppLayout headerTitle="相册管理 - 新增照片">
       <div className="create-gallery-container">
@@ -107,7 +169,10 @@ export default function CreateGalleryPage() {
               accept="image/*"
               fileList={photoFileList}
               limit={1}
+              showClear={true}
+              showReplace={true}
               onFileChange={(files: any[]) => {
+                console.log('onFileChange 触发:', files);
                 // 确保上传成功后 url 被设置到 file 对象上，这样 Image 组件才能正确显示预览
                 const updatedFiles = files.map(file => {
                   if (file.status === 'success' && file.response && !file.url) {
@@ -116,42 +181,40 @@ export default function CreateGalleryPage() {
                   return file;
                 });
                 setPhotoFileList(updatedFiles);
+                
                 if (files.length > 0 && files[0].status === 'success') {
                   const url = files[0].url || files[0].response?.url;
-                  if (url) {
+                  if (url && formApi) {
                     setPreviewUrl(url);
                     formApi.setValue('url', url);
                   }
                 }
+                
                 if (files.length === 0) {
                   setPreviewUrl('');
-                  formApi.setValue('url', '');
+                  if (formApi) {
+                    formApi.setValue('url', '');
+                  }
                 }
               }}
               onRemove={() => {
                 setPhotoFileList([]);
                 setPreviewUrl('');
-                formApi.setValue('url', '');
-              }}
-              renderThumbnail={(file: any) => {
-                const url = file.url || file.response?.url;
-                return (
-                  <Image
-                    src={url}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                );
-              }}
-              customRequest={async ({ fileInstance, onSuccess, onError }: any) => {
-                try {
-                  const res = await uploadFile(fileInstance);
-                  setPreviewUrl(res.url);
-                  formApi.setValue('url', res.url);
-                  onSuccess(res, fileInstance);
-                } catch (error) {
-                  Toast.error('上传图片失败');
-                  onError(error);
+                if (formApi) {
+                  formApi.setValue('url', '');
                 }
+                return true;
+              }}
+              onClear={() => {
+                setPhotoFileList([]);
+                setPreviewUrl('');
+                if (formApi) {
+                  formApi.setValue('url', '');
+                }
+              }}
+              customRequest={({ fileInstance, onSuccess, onError }: any) => {
+                // 拦截上传，先显示压缩界面
+                handleFileSelected(fileInstance, { onSuccess, onError });
               }}
             >
               <IconPlus size="extra-large" />
@@ -226,6 +289,25 @@ export default function CreateGalleryPage() {
             </Space>
           </Form.Slot>
         </Form>
+
+        {/* 图片压缩模态框 */}
+        <Modal
+          visible={showCompressor}
+          footer={null}
+          onCancel={handleCancelCompress}
+          width={1200}
+          bodyStyle={{ padding: 0 }}
+          closeOnEsc={false}
+        >
+          {selectedFile && (
+            <ImageCompressor
+              file={selectedFile}
+              onCompressed={handleCompressedFile}
+              onUseOriginal={handleUseOriginal}
+              onCancel={handleCancelCompress}
+            />
+          )}
+        </Modal>
       </div>
     </AppLayout>
   );
