@@ -90,6 +90,7 @@ export default function CreateBlogPage() {
         category: values.category,
         tags: values.tags && values.tags.length > 0 ? values.tags : undefined,
         imageUrl: values.imageUrl || undefined,
+        createTime: values.createTime ? new Date(values.createTime).toISOString() : undefined,
       });
       Toast.success('创建成功');
       navigate('/blog/list');
@@ -200,6 +201,15 @@ export default function CreateBlogPage() {
                 label: tag.name,
                 value: tag.id,
               }))}
+            />
+
+            <Form.DatePicker
+              field="createTime"
+              label="创建时间"
+              placeholder="留空则使用当前时间"
+              style={{ width: '100%' }}
+              type="dateTime"
+              format="yyyy-MM-dd HH:mm:ss"
             />
 
             <Form.Slot label="封面图片">
